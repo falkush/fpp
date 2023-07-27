@@ -3,3 +3,6 @@ Maximizing the difficulty of a puzzle from The Legend of Zelda: Oracle of Ages. 
 
 # Requirement
 Java Runtime Environment
+
+# Video
+https://www.youtube.com/watch?v=F_QnVyMNL7Q
