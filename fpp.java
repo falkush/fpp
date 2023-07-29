@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -18,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
+import java.util.HashSet;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -29,9 +31,35 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	/**
 	 * 
 	 */
+
+	 enum Direction {
+		Up,
+		Down,
+		Left,
+		Right
+	 }
+
+	enum UserKey {
+		Escape,
+		Left,
+		Right,
+		Up,
+		Down,
+		Reset,
+		Backtrack,
+		None
+	}
+
 	private static final long serialVersionUID = -1808422750914444039L;
 	static public char c;
 	 static public boolean focus;
+
+	 public static HashSet<UserKey> keyPresses = new HashSet<UserKey>();
+
+	 public Point Left = new Point(-1, 0);
+	 public Point Right = new Point(1, 0);
+	 public Point Up = new Point(0, -1);
+	 public Point Down = new Point(0, 1);
 	 
 	 static final public JFrame frame = new JFrame("");
 	 static final public JLabel label = new JLabel();
@@ -39,14 +67,6 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	 static public int centralx, centraly;
 	 
 	 static public boolean clicked=false;
-	 
-	 static public boolean holdw=false;
-	 static public boolean holdq=false;
-	 static public boolean holda=false;
-	 static public boolean holds=false;
-	 static public boolean holdd=false;
-	 static public boolean holdv=false;
-	 static public boolean holdesc=false;
 	 
 	 static public int gamestate=1;
 	 static public int gamepuzzle=0;
@@ -104,7 +124,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 		int l;
 		
 		boolean[][] board;
-		int[] reg;
+		Direction[] reg;
 		
 		int posx;
 		int posy;
@@ -1159,9 +1179,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    						}
 	    						
 	    					}
-	    					else if(holdesc==true)
+	    					else if(keyPresses.contains(UserKey.Escape))
 	    					{
-								holdesc = false;
+								keyPresses.remove(UserKey.Escape);
 	    						gamestate=1;
 	    						break;
 	    					}
@@ -1205,9 +1225,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    						}
 	    						
 	    					}
-	    					else if(holdesc==true)
+	    					else if(keyPresses.contains(UserKey.Escape))
 	    					{
-	    						holdesc = false;
+								keyPresses.remove(UserKey.Escape);
 	    						gamestate=1;
 	    						break;
 	    					}
@@ -1266,9 +1286,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 		    						}
 		    						
 		    					}
-		    					else if(holdesc==true)
-		    					{
-		    						holdesc=false;
+		    					else if(keyPresses.contains(UserKey.Escape))
+								{
+									keyPresses.remove(UserKey.Escape);
 		    						gamestate=1;
 		    						break;
 		    					}
@@ -1315,9 +1335,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 		    						}
 		    						
 		    					}
-		    					else if(holdesc==true)
-		    					{
-		    						holdesc=false;
+		    					else if(keyPresses.contains(UserKey.Escape))
+	    						{
+									keyPresses.remove(UserKey.Escape);
 		    						gamestate=1;
 		    						break;
 		    					}
@@ -1361,9 +1381,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    						}
 	    						
 	    					}
-	    					else if(holdesc==true)
+	    					else if(keyPresses.contains(UserKey.Escape))
 	    					{
-	    						holdesc=false;
+								keyPresses.remove(UserKey.Escape);
 	    						gamestate=1;
 	    						break;
 	    					}
@@ -1384,7 +1404,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			
 	    			board = new boolean[width][width];
 	    			puzzle = new boolean[width][width];
-	    			reg = new int[width*width];
+	    			reg = new Direction[width*width];
 	    			
 	    			startx=stx[gamepuzzle];
 	    			starty=sty[gamepuzzle];
@@ -1397,22 +1417,22 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			if(starty==0)
 	    			{
 	    				prevdir=1;
-	    				reg[0]=3;
+	    				reg[0]=Direction.Down;
 	    			}
 	    			else if(starty==height-1)
 	    			{
 	    				prevdir=3;
-	    				reg[0]=1;
+	    				reg[0]=Direction.Up;
 	    			}
 	    			else if(startx==0)
 	    			{
 	    				prevdir=0;
-	    				reg[0]=2;
+	    				reg[0]=Direction.Right;
 	    			}
 	    			else
 	    			{
 	    				prevdir=2;
-	    				reg[0]=0;
+	    				reg[0]=Direction.Left;
 	    			}
 	    			
 	    			regpos=1;
@@ -1472,7 +1492,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    	 	    	}
 	    	 	    }
 
-	    			if(reg[0]==2)
+	    			if(reg[0]==Direction.Right)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
@@ -1485,7 +1505,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+2]=0;
 	    			    }
 	    			}
-	    			else if(reg[0]==3)
+	    			else if(reg[0]==Direction.Down)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
@@ -1498,7 +1518,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+2]=0;
 	    			    }
 	    			}
-	    			else if(reg[0]==0)
+	    			else if(reg[0]==Direction.Left)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
@@ -1555,9 +1575,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			    	
 	    		if(focus)
 	    		{
-	    		if(holdv)
-	    		{
-	    			holdv=false;
+					if(keyPresses.contains(UserKey.Reset))
+					{
+						keyPresses.remove(UserKey.Reset);
 	    			
 	    			regpos=1;
 	    			
@@ -1625,7 +1645,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    	 	    	}
 	    	 	    }
 	    		    
-	    			if(reg[0]==2)
+	    			if(reg[0]==Direction.Right)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
@@ -1638,7 +1658,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+2]=0;
 	    			    }
 	    			}
-	    			else if(reg[0]==3)
+	    			else if(reg[0]==Direction.Down)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
@@ -1651,7 +1671,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+2]=0;
 	    			    }
 	    			}
-	    			else if(reg[0]==0)
+	    			else if(reg[0]==Direction.Left)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
@@ -1714,11 +1734,11 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    				prevdir=2;
 	    			}
 	    		}
-	    		else if(holds && posy<height-1 && !board[posx][posy+1])
+	    		else if(keyPresses.contains(UserKey.Down) && posy<height-1 && !board[posx][posy+1])
 	    		{
-	    			holds=false;
+					keyPresses.remove(UserKey.Down);
 	    			
-	    			reg[regpos]=3;
+	    			reg[regpos]=Direction.Down;
 	    			regpos++;
 
 	    			for(i=0;i<50;i++)
@@ -1857,11 +1877,11 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    	}
 	    		    }
 	    		}
-	    		else if(holda && posx>0 && !board[posx-1][posy])
+	    		else if(keyPresses.contains(UserKey.Left) && posx>0 && !board[posx-1][posy])
 	    		{
-	    			holda=false;
+	    			keyPresses.remove(UserKey.Left);
 	    			
-	    			reg[regpos]=0;
+	    			reg[regpos]=Direction.Left;
 	    			regpos++;
 
 	    			for(i=0;i<50;i++)
@@ -2000,11 +2020,11 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    	}
 	    		    }
 	    		}
-	    		else if(holdd && posx<width-1 && !board[posx+1][posy])
+	    		else if(keyPresses.contains(UserKey.Right) && posx<width-1 && !board[posx+1][posy])
 	    		{
-	    			holdd=false;
+	    			keyPresses.remove(UserKey.Right);
 
-	    			reg[regpos]=2;
+	    			reg[regpos]=Direction.Right;
 	    			regpos++;
 	    			
 	    			
@@ -2144,11 +2164,11 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    	}
 	    		    }
 	    		}
-	    		else if(holdw && posy>0 && !board[posx][posy-1])
+	    		else if (keyPresses.contains(UserKey.Up) && posy>0 && !board[posx][posy-1])
 	    		{
-	    			holdw=false;
+	    			keyPresses.remove(UserKey.Up);
 
-	    			reg[regpos]=1;
+	    			reg[regpos]=Direction.Up;
 	    			regpos++;
 
 	    			
@@ -2288,9 +2308,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    	}
 	    		    }
 	    		}
-	    		else if(holdq && regpos>1)
+	    		else if(keyPresses.contains(UserKey.Backtrack) && regpos>1)
 	    		{
-	    			holdq=false;
+	    			keyPresses.remove(UserKey.Backtrack);
 	    			regpos--;
 	    			
 	    			for(i=0;i<50;i++)
@@ -2313,9 +2333,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	 	    		}
 	    			
 	    			board[posx][posy]=false;
-	    			if(reg[regpos]==0) posx++;
-	    			else if(reg[regpos]==1) posy++;
-	    			else if(reg[regpos]==2) posx--;
+	    			if(reg[regpos]==Direction.Right) posx++;
+	    			else if(reg[regpos]==Direction.Down) posy++;
+	    			else if(reg[regpos]==Direction.Left) posx--;
 	    			else posy--;
 	    			
 	    			for(i=0;i<50;i++) { for(j=0;j<50;j++) {
@@ -2332,7 +2352,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)225;
 	    				}}}
 	    			
-	    			if(reg[regpos-1]==0)
+	    			if(reg[regpos-1]==Direction.Left)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
@@ -2346,7 +2366,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			    }
 	    				prevdir=2;
 	    			}
-	    			else if(reg[regpos-1]==1)
+	    			else if(reg[regpos-1]==Direction.Up)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
@@ -2360,7 +2380,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			    }
 	    				prevdir=3;
 	    			}
-	    			else if(reg[regpos-1]==2)
+	    			else if(reg[regpos-1]==Direction.Right)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
@@ -2408,7 +2428,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    	}
 	    		    }
 	    		}
-	    		else if(holdesc)
+	    		if(keyPresses.contains(UserKey.Escape))
 				{
 	    			if(psize[gamepuzzle]==4) gamestate=2;
 	    			if(psize[gamepuzzle]==5) gamestate=3;
@@ -2416,7 +2436,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			if(psize[gamepuzzle]==7) gamestate=5;
 	    			if(psize[gamepuzzle]==8) gamestate=6;
 
-	    			holdesc=false;
+	    			keyPresses.remove(UserKey.Escape);
 	    			break;
 				}
 	    		
@@ -3203,7 +3223,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			Thread.sleep(10);
 	    			if(focus)
 	    			{
-	    				 if(holdesc)
+	    				 if(keyPresses.contains(UserKey.Escape))
 	    					{
 	    		    			if(psize[gamepuzzle]==4) gamestate=2;
 	    		    			if(psize[gamepuzzle]==5) gamestate=3;
@@ -3211,7 +3231,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    			if(psize[gamepuzzle]==7) gamestate=5;
 	    		    			if(psize[gamepuzzle]==8) gamestate=6;
 
-	    		    			holdesc=false;
+	    		    			keyPresses.remove(UserKey.Escape);
 	    		    			break;
 	    					}
 	    			}
@@ -3236,30 +3256,50 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
         super.addNotify();
         requestFocus();
     }
-	
-	@Override
-	public void keyPressed(KeyEvent e) {}
-	@Override
-	public void keyReleased(KeyEvent e) {
-		c = e.getKeyChar();
-		if(c==119) {holdw=false;}
-		if(c==27) {holdesc=false;}
-		else if(c==113) {holdq=false;}
-		else if(c==97) {holda=false;}
-		else if(c==115) {holds=false;}
-		else if(c==100) {holdd=false;}
-		else if(c==114) {holdv=false;}
-	}
 	@Override
 	public void keyTyped(KeyEvent e) {
-		c = e.getKeyChar();
-		if(c==27) {holdesc=true;}
-		else if(c==119) {holdw=true;}
-		else if(c==113) {holdq=true;}
-		else if(c==97) {holda=true;}
-		else if(c==115) {holds=true;}
-		else if(c==100) {holdd=true;}
-		else if(c==114) {holdv=true;}
+		UserKey currentKey = getUserEventFromKey(e.getKeyCode());
+		if (currentKey != UserKey.None && !keyPresses.contains(currentKey))
+			keyPresses.add(currentKey);
+	}
+	@Override
+	public void keyPressed(KeyEvent e) {
+		UserKey currentKey = getUserEventFromKey(e.getKeyCode());
+		if (currentKey != UserKey.None && !keyPresses.contains(currentKey))
+			keyPresses.add(currentKey);
+	}
+	
+	@Override
+	public void keyReleased(KeyEvent e) {
+		UserKey currentKey = getUserEventFromKey(e.getKeyCode());
+		if (keyPresses.contains(currentKey))
+			keyPresses.remove(currentKey);
+	}
+
+	private UserKey getUserEventFromKey(int keyCode)
+	{
+		switch (keyCode) {
+			case KeyEvent.VK_ESCAPE:
+				return UserKey.Escape;
+			case KeyEvent.VK_R:
+				return UserKey.Reset;
+			case KeyEvent.VK_Q:
+				return UserKey.Backtrack;
+			case KeyEvent.VK_LEFT:
+			case KeyEvent.VK_A:
+				return UserKey.Left;
+			case KeyEvent.VK_RIGHT:
+			case KeyEvent.VK_D:
+				return UserKey.Right;
+			case KeyEvent.VK_UP:
+			case KeyEvent.VK_W:
+				return UserKey.Up;
+			case KeyEvent.VK_DOWN:
+			case KeyEvent.VK_S:
+				return UserKey.Down;
+			default:
+				return UserKey.None;
+		}
 	}
 
 	@Override
