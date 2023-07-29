@@ -47,7 +47,6 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	 static public boolean holdd=false;
 	 static public boolean holdv=false;
 	 static public boolean holdesc=false;
-	 static public boolean acckey=true;
 	 
 	 static public int gamestate=1;
 	 static public int gamepuzzle=0;
@@ -1160,9 +1159,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    						}
 	    						
 	    					}
-	    					else if(holdesc==true && acckey)
+	    					else if(holdesc==true)
 	    					{
-	    						acckey=false;
+								holdesc = false;
 	    						gamestate=1;
 	    						break;
 	    					}
@@ -1206,9 +1205,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    						}
 	    						
 	    					}
-	    					else if(holdesc==true && acckey)
+	    					else if(holdesc==true)
 	    					{
-	    						acckey=false;
+	    						holdesc = false;
 	    						gamestate=1;
 	    						break;
 	    					}
@@ -1267,9 +1266,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 		    						}
 		    						
 		    					}
-		    					else if(holdesc==true && acckey)
+		    					else if(holdesc==true)
 		    					{
-		    						acckey=false;
+		    						holdesc=false;
 		    						gamestate=1;
 		    						break;
 		    					}
@@ -1316,9 +1315,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 		    						}
 		    						
 		    					}
-		    					else if(holdesc==true && acckey)
+		    					else if(holdesc==true)
 		    					{
-		    						acckey=false;
+		    						holdesc=false;
 		    						gamestate=1;
 		    						break;
 		    					}
@@ -1362,9 +1361,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    						}
 	    						
 	    					}
-	    					else if(holdesc==true && acckey)
+	    					else if(holdesc==true)
 	    					{
-	    						acckey=false;
+	    						holdesc=false;
 	    						gamestate=1;
 	    						break;
 	    					}
@@ -1556,9 +1555,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			    	
 	    		if(focus)
 	    		{
-	    		if(holdv && acckey)
+	    		if(holdv)
 	    		{
-	    			acckey=false;
+	    			holdv=false;
 	    			
 	    			regpos=1;
 	    			
@@ -1715,9 +1714,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    				prevdir=2;
 	    			}
 	    		}
-	    		else if(holds && acckey && posy<height-1 && !board[posx][posy+1])
+	    		else if(holds && posy<height-1 && !board[posx][posy+1])
 	    		{
-	    			acckey=false;
+	    			holds=false;
 	    			
 	    			reg[regpos]=3;
 	    			regpos++;
@@ -1858,9 +1857,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    	}
 	    		    }
 	    		}
-	    		else if(holda && acckey && posx>0 && !board[posx-1][posy])
+	    		else if(holda && posx>0 && !board[posx-1][posy])
 	    		{
-	    			acckey=false;
+	    			holda=false;
 	    			
 	    			reg[regpos]=0;
 	    			regpos++;
@@ -2001,9 +2000,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    	}
 	    		    }
 	    		}
-	    		else if(holdd && acckey && posx<width-1 && !board[posx+1][posy])
+	    		else if(holdd && posx<width-1 && !board[posx+1][posy])
 	    		{
-	    			acckey=false;
+	    			holdd=false;
 
 	    			reg[regpos]=2;
 	    			regpos++;
@@ -2145,9 +2144,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    	}
 	    		    }
 	    		}
-	    		else if(holdw && acckey && posy>0 && !board[posx][posy-1])
+	    		else if(holdw && posy>0 && !board[posx][posy-1])
 	    		{
-	    			acckey=false;
+	    			holdw=false;
 
 	    			reg[regpos]=1;
 	    			regpos++;
@@ -2289,9 +2288,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    	}
 	    		    }
 	    		}
-	    		else if(holdq && acckey && regpos>1)
+	    		else if(holdq && regpos>1)
 	    		{
-	    			acckey=false;
+	    			holdq=false;
 	    			regpos--;
 	    			
 	    			for(i=0;i<50;i++)
@@ -2409,7 +2408,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    	}
 	    		    }
 	    		}
-	    		else if(holdesc && acckey)
+	    		else if(holdesc)
 				{
 	    			if(psize[gamepuzzle]==4) gamestate=2;
 	    			if(psize[gamepuzzle]==5) gamestate=3;
@@ -2417,7 +2416,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			if(psize[gamepuzzle]==7) gamestate=5;
 	    			if(psize[gamepuzzle]==8) gamestate=6;
 
-	    			acckey=false;
+	    			holdesc=false;
 	    			break;
 				}
 	    		
@@ -3204,7 +3203,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			Thread.sleep(10);
 	    			if(focus)
 	    			{
-	    				 if(holdesc && acckey)
+	    				 if(holdesc)
 	    					{
 	    		    			if(psize[gamepuzzle]==4) gamestate=2;
 	    		    			if(psize[gamepuzzle]==5) gamestate=3;
@@ -3212,7 +3211,7 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    			if(psize[gamepuzzle]==7) gamestate=5;
 	    		    			if(psize[gamepuzzle]==8) gamestate=6;
 
-	    		    			acckey=false;
+	    		    			holdesc=false;
 	    		    			break;
 	    					}
 	    			}
@@ -3239,17 +3238,17 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
     }
 	
 	@Override
-	public void keyPressed(KeyEvent e) { }
+	public void keyPressed(KeyEvent e) {}
 	@Override
 	public void keyReleased(KeyEvent e) {
 		c = e.getKeyChar();
-		if(c==119) {holdw=false;acckey=true;}
-		if(c==27) {holdesc=false;acckey=true;}
-		else if(c==113) {holdq=false;acckey=true;}
-		else if(c==97) {holda=false;acckey=true;}
-		else if(c==115) {holds=false;acckey=true;}
-		else if(c==100) {holdd=false;acckey=true;}
-		else if(c==114) {holdv=false;acckey=true;}
+		if(c==119) {holdw=false;}
+		if(c==27) {holdesc=false;}
+		else if(c==113) {holdq=false;}
+		else if(c==97) {holda=false;}
+		else if(c==115) {holds=false;}
+		else if(c==100) {holdd=false;}
+		else if(c==114) {holdv=false;}
 	}
 	@Override
 	public void keyTyped(KeyEvent e) {
