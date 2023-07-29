@@ -56,10 +56,10 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 
 	 public static HashSet<UserKey> keyPresses = new HashSet<UserKey>();
 
-	 public Point Left = new Point(-1, 0);
-	 public Point Right = new Point(1, 0);
-	 public Point Up = new Point(0, -1);
-	 public Point Down = new Point(0, 1);
+	 public static Point Left = new Point(-1, 0);
+	 public static Point Right = new Point(1, 0);
+	 public static Point Up = new Point(0, -1);
+	 public static Point Down = new Point(0, 1);
 	 
 	 static final public JFrame frame = new JFrame("");
 	 static final public JLabel label = new JLabel();
@@ -107,12 +107,20 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	 static public boolean[] psolve = new boolean[35];
 	 static public boolean[] psolve2 = new boolean[5];
 	 static public boolean psolvec;
+
+	 static private Direction prevdir = Direction.Down;
+	 static private Direction[] reg;
+	 static private int regpos=1;
+	 static private byte[] pixels;
+	 static private int width2;
+	 static private boolean[][] board;
+
+	 static private Point pos = new Point();
 	  
 	public static void main(String[] args) throws InterruptedException, URISyntaxException {
 		int i,j;
 		
-		int height;
-		int width;
+		Point size = new Point();
 
 		boolean[][] puzzle;
 
@@ -123,15 +131,6 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 		boolean solve;
 		int l;
 		
-		boolean[][] board;
-		Direction[] reg;
-		
-		int posx;
-		int posy;
-		
-		int prevdir;
-		int regpos=1;
-		
 		
 		int mousex;
 		int mousey;
@@ -139,8 +138,6 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 		boolean solved=false;
 		
 		int pathl;
-		
-		int width2;
 		
 		int pw,ph;
 		
@@ -197,7 +194,6 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	 
 	    frame.getContentPane().setBackground( Color.BLACK );
 	    
-	    byte[] pixels;
 	    byte[] pixels1 =((DataBufferByte) image1.getRaster().getDataBuffer()).getData();
 	    byte[] pixels2 =((DataBufferByte) image2.getRaster().getDataBuffer()).getData();
 	    byte[] pixels3 =((DataBufferByte) image3.getRaster().getDataBuffer()).getData();
@@ -1393,45 +1389,45 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		
 	    		else if(gamestate==0)
 	    		{
-	    			width=psize[gamepuzzle];
-	    			height=width;
+	    			size.x=psize[gamepuzzle];
+	    			size.y=size.x;
 	    			
-	    			width2=50*width;
+	    			width2=50*size.x;
 	    			
 	    			frame.setSize(width2, width2);
 	    			image = new BufferedImage(width2,width2,BufferedImage.TYPE_3BYTE_BGR);
 	    			pixels =((DataBufferByte) image.getRaster().getDataBuffer()).getData();
 	    			
-	    			board = new boolean[width][width];
-	    			puzzle = new boolean[width][width];
-	    			reg = new Direction[width*width];
+	    			board = new boolean[size.x][size.x];
+	    			puzzle = new boolean[size.x][size.x];
+	    			reg = new Direction[size.x*size.x];
 	    			
 	    			startx=stx[gamepuzzle];
 	    			starty=sty[gamepuzzle];
 	    			
-	    			posx=startx;
-	    			posy=starty;
+	    			pos.x=startx;
+	    			pos.y=starty;
 	    			
-	    			pathl=width*width-nbo[gamepuzzle];
+	    			pathl=size.x*size.x-nbo[gamepuzzle];
 	    			
 	    			if(starty==0)
 	    			{
-	    				prevdir=1;
+	    				prevdir=Direction.Up;
 	    				reg[0]=Direction.Down;
 	    			}
-	    			else if(starty==height-1)
+	    			else if(starty==size.y-1)
 	    			{
-	    				prevdir=3;
+	    				prevdir=Direction.Down;
 	    				reg[0]=Direction.Up;
 	    			}
 	    			else if(startx==0)
 	    			{
-	    				prevdir=0;
+	    				prevdir=Direction.Left;
 	    				reg[0]=Direction.Right;
 	    			}
 	    			else
 	    			{
-	    				prevdir=2;
+	    				prevdir=Direction.Right;
 	    				reg[0]=Direction.Left;
 	    			}
 	    			
@@ -1443,9 +1439,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			board[startx][starty]=true;
 	    			
 	    			
-	    			for(ph=0;ph<height;ph++)
+	    			for(ph=0;ph<size.y;ph++)
 	    	 	    {
-	    	 	    	for(pw=0;pw<width;pw++)
+	    	 	    	for(pw=0;pw<size.x;pw++)
 	    	 	    	{
 	    	 	    		for(i=0;i<50;i++)
 	    	 	    		{
@@ -1496,52 +1492,52 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+24)+50*posx+i)]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+i)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+2]=0;
 	    			    }
 	    			}
 	    			else if(reg[0]==Direction.Down)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+i)+50*posx+24)]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+24)+1]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+24)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+1]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+2]=0;
 	    			    }
 	    			}
 	    			else if(reg[0]==Direction.Left)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+24)+50*posx+25+i)]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+2]=0;
 	    			    }
 	    			}
 	    			else
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+25+i)+50*posx+24)]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+1]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+1]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+2]=0;
 	    			    }
 	    			}
 	    		    
@@ -1582,9 +1578,9 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			regpos=1;
 	    			
 	    			
-	    			for(i=0;i<width;i++)
+	    			for(i=0;i<size.x;i++)
 	    			{
-	    				for(j=0;j<width;j++)
+	    				for(j=0;j<size.x;j++)
 	    				{
 	    					board[i][j]=puzzle[i][j];
 	    				}
@@ -1593,12 +1589,12 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			
 	    			board[startx][starty]=true;
 	    			
-	    			posx=startx;
-	    			posy=starty;
+	    			pos.x=startx;
+	    			pos.y=starty;
 	    			
-	    			for(ph=0;ph<height;ph++)
+	    			for(ph=0;ph<size.y;ph++)
 	    	 	    {
-	    	 	    	for(pw=0;pw<width;pw++)
+	    	 	    	for(pw=0;pw<size.x;pw++)
 	    	 	    	{
 	    	 	    		for(i=0;i<50;i++)
 	    	 	    		{
@@ -1649,52 +1645,52 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+24)+50*posx+i)]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+i)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+2]=0;
 	    			    }
 	    			}
 	    			else if(reg[0]==Direction.Down)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+i)+50*posx+24)]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+24)+1]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+24)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+1]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+2]=0;
 	    			    }
 	    			}
 	    			else if(reg[0]==Direction.Left)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+24)+50*posx+25+i)]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+2]=0;
 	    			    }
 	    			}
 	    			else
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+25+i)+50*posx+24)]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+1]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+1]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+2]=0;
 	    			    }
 	    			}
 	    		    
@@ -1719,165 +1715,28 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    
 	    		    if(starty==0)
 	    			{
-	    				prevdir=1;
+	    				prevdir=Direction.Up;
 	    			}
-	    			else if(starty==height-1)
+	    			else if(starty==size.y-1)
 	    			{
-	    				prevdir=3;
+	    				prevdir=Direction.Down;
 	    			}
 	    			else if(startx==0)
 	    			{
-	    				prevdir=0;
+	    				prevdir=Direction.Left;
 	    			}
 	    			else
 	    			{
-	    				prevdir=2;
+	    				prevdir=Direction.Right;
 	    			}
 	    		}
-	    		else if(keyPresses.contains(UserKey.Down) && posy<height-1 && !board[posx][posy+1])
+	    		else if(keyPresses.contains(UserKey.Down) && pos.y<size.y-1 && !board[pos.x][pos.y+1])
 	    		{
 					keyPresses.remove(UserKey.Down);
 	    			
-	    			reg[regpos]=Direction.Down;
-	    			regpos++;
-
-	    			for(i=0;i<50;i++)
-	 	    		{
-	 	    			for(j=0;j<50;j++)
-	 	    			{
-		 	    				if(i<1||i>48||j<1||j>48)
-		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)12;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)29;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)174;
-		 	    				}
-		 	    				else
-		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)91;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)70;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)248;
-		 	    				}
-	 	    			}
-	 	    		}
-	    			
-	    			if(prevdir==0)
-	    			{
-	    				for(i=0;i<25;i++)
-	    			    {
-	    			    	pixels[3*(width2*(50*posy+24)+50*posx+i)]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+i)+2]=0;
-	    					
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+2]=0;
-	    			    }
-	    			}
-	    			else if(prevdir==1)
-	    			{
-	    				for(i=0;i<25;i++)
-	    			    {
-	    			    	pixels[3*(width2*(50*posy+i)+50*posx+24)]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+24)+1]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+24)+2]=0;
-	    					
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+1]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+2]=0;
-	    			    }
-	    			}
-	    			else if(prevdir==2)
-	    			{
-	    				for(i=0;i<25;i++)
-	    			    {
-	    			    	pixels[3*(width2*(50*posy+24)+50*posx+25+i)]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+2]=0;
-	    					
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+2]=0;
-	    			    }
-	    			}
-	    			else
-	    			{
-	    				for(i=0;i<25;i++)
-	    			    {
-	    			    	pixels[3*(width2*(50*posy+25+i)+50*posx+24)]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+1]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+2]=0;
-	    					
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+1]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+2]=0;
-	    			    }
-	    			}
-	    			
-	    			for(i=0;i<25;i++)
-    			    {
-    			    	pixels[3*(width2*(50*posy+25+i)+50*posx+24)]=0;
-    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+1]=0;
-    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+2]=0;
-    					
-    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)]=0;
-    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+1]=0;
-    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+2]=0;
-    			    }
-	    			
-	    			posy++;
-	    			board[posx][posy]=true;
-	    			prevdir=1;
-	    			
-	    			for(i=0;i<50;i++)
-	 	    		{
-	 	    			for(j=0;j<50;j++)
-	 	    			{
-		 	    				if(i<1||i>48||j<1||j>48)
-		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)82;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)129;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)188;
-		 	    				}
-		 	    				else
-		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)90;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)203;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)225;
-		 	    				}
-	 	    			}
-	 	    		}
-	    			
-	    			for(i=0;i<25;i++)
-    			    {
-    			    	pixels[3*(width2*(50*posy+i)+50*posx+24)]=0;
-    					pixels[3*(width2*(50*posy+i)+50*posx+24)+1]=0;
-    					pixels[3*(width2*(50*posy+i)+50*posx+24)+2]=0;
-    					
-    					pixels[3*(width2*(50*posy+i)+50*posx+25)]=0;
-    					pixels[3*(width2*(50*posy+i)+50*posx+25)+1]=0;
-    					pixels[3*(width2*(50*posy+i)+50*posx+25)+2]=0;
-    			    }
-	    			
-	    			for(i=0;i<20;i++)
-	    		    {
-	    		    	for(j=0;j<20;j++)
-	    		    	{
-	    		    		if(i<1||i>18||j<1||j>18)
-	    	 				{
-	    		    			pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)]=0;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+1]=0;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+2]=0;
-	    	 				}
-	    		    		else
-	    		    		{
-	    			    		pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)]=(byte)122;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+1]=(byte)185;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+2]=(byte)53;
-	    		    		}
-	    		    	}
-	    		    }
+	    			MoveCharacter(Direction.Down);
 	    		}
-	    		else if(keyPresses.contains(UserKey.Left) && posx>0 && !board[posx-1][posy])
+	    		else if(keyPresses.contains(UserKey.Left) && pos.x>0 && !board[pos.x-1][pos.y])
 	    		{
 	    			keyPresses.remove(UserKey.Left);
 	    			
@@ -1890,86 +1749,86 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	 	    			{
 		 	    				if(i<1||i>48||j<1||j>48)
 		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)12;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)29;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)174;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)12;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)29;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)174;
 		 	    				}
 		 	    				else
 		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)91;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)70;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)248;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)91;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)70;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)248;
 		 	    				}
 	 	    			}
 	 	    		}
 	    			
-	    			if(prevdir==0)
+	    			if(prevdir==Direction.Left)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+24)+50*posx+i)]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+i)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+2]=0;
 	    			    }
 	    			}
-	    			else if(prevdir==1)
+	    			else if(prevdir==Direction.Up)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+i)+50*posx+24)]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+24)+1]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+24)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+1]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+2]=0;
 	    			    }
 	    			}
-	    			else if(prevdir==2)
+	    			else if(prevdir==Direction.Right)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+24)+50*posx+25+i)]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+2]=0;
 	    			    }
 	    			}
 	    			else
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+25+i)+50*posx+24)]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+1]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+1]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+2]=0;
 	    			    }
 	    			}
 	    			
 	    			for(i=0;i<25;i++)
     			    {
-    			    	pixels[3*(width2*(50*posy+24)+50*posx+i)]=0;
-    					pixels[3*(width2*(50*posy+24)+50*posx+i)+1]=0;
-    					pixels[3*(width2*(50*posy+24)+50*posx+i)+2]=0;
+    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)]=0;
+    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+1]=0;
+    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+2]=0;
     					
-    					pixels[3*(width2*(50*posy+25)+50*posx+i)]=0;
-    					pixels[3*(width2*(50*posy+25)+50*posx+i)+1]=0;
-    					pixels[3*(width2*(50*posy+25)+50*posx+i)+2]=0;
+    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)]=0;
+    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+1]=0;
+    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+2]=0;
     			    }
 	    			
-	    			posx--;
-	    			board[posx][posy]=true;
-	    			prevdir=2;
+	    			pos.x--;
+	    			board[pos.x][pos.y]=true;
+	    			prevdir=Direction.Right;
 	    			
 	    			for(i=0;i<50;i++)
 	 	    		{
@@ -1977,28 +1836,28 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	 	    			{
 		 	    				if(i<1||i>48||j<1||j>48)
 		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)82;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)129;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)188;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)82;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)129;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)188;
 		 	    				}
 		 	    				else
 		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)90;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)203;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)225;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)90;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)203;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)225;
 		 	    				}
 	 	    			}
 	 	    		}
 	    			
 	    			for(i=0;i<25;i++)
     			    {
-    			    	pixels[3*(width2*(50*posy+24)+50*posx+25+i)]=0;
-    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+1]=0;
-    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+2]=0;
+    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)]=0;
+    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+1]=0;
+    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+2]=0;
     					
-    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)]=0;
-    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+1]=0;
-    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+2]=0;
+    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)]=0;
+    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+1]=0;
+    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+2]=0;
     			    }
 	    			
 	    			for(i=0;i<20;i++)
@@ -2007,20 +1866,20 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    	{
 	    		    		if(i<1||i>18||j<1||j>18)
 	    	 				{
-	    		    			pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)]=0;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+1]=0;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+2]=0;
+	    		    			pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)]=0;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+1]=0;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+2]=0;
 	    	 				}
 	    		    		else
 	    		    		{
-	    			    		pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)]=(byte)122;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+1]=(byte)185;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+2]=(byte)53;
+	    			    		pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)]=(byte)122;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+1]=(byte)185;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+2]=(byte)53;
 	    		    		}
 	    		    	}
 	    		    }
 	    		}
-	    		else if(keyPresses.contains(UserKey.Right) && posx<width-1 && !board[posx+1][posy])
+	    		else if(keyPresses.contains(UserKey.Right) && pos.x<size.x-1 && !board[pos.x+1][pos.y])
 	    		{
 	    			keyPresses.remove(UserKey.Right);
 
@@ -2034,86 +1893,86 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	 	    			{
 		 	    				if(i<1||i>48||j<1||j>48)
 		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)12;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)29;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)174;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)12;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)29;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)174;
 		 	    				}
 		 	    				else
 		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)91;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)70;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)248;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)91;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)70;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)248;
 		 	    				}
 	 	    			}
 	 	    		}
 	    			
-	    			if(prevdir==0)
+	    			if(prevdir==Direction.Left)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+24)+50*posx+i)]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+i)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+2]=0;
 	    			    }
 	    			}
-	    			else if(prevdir==1)
+	    			else if(prevdir==Direction.Up)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+i)+50*posx+24)]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+24)+1]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+24)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+1]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+2]=0;
 	    			    }
 	    			}
-	    			else if(prevdir==2)
+	    			else if(prevdir==Direction.Right)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+24)+50*posx+25+i)]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+2]=0;
 	    			    }
 	    			}
 	    			else
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+25+i)+50*posx+24)]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+1]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+1]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+2]=0;
 	    			    }
 	    			}
 	    			
 	    			for(i=0;i<25;i++)
     			    {
-    			    	pixels[3*(width2*(50*posy+24)+50*posx+25+i)]=0;
-    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+1]=0;
-    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+2]=0;
+    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)]=0;
+    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+1]=0;
+    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+2]=0;
     					
-    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)]=0;
-    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+1]=0;
-    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+2]=0;
+    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)]=0;
+    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+1]=0;
+    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+2]=0;
     			    }
 	    			
-	    			posx++;
-	    			board[posx][posy]=true;
-	    			prevdir=0;
+	    			pos.x++;
+	    			board[pos.x][pos.y]=true;
+	    			prevdir=Direction.Left;
 	    			
 	    			for(i=0;i<50;i++)
 	 	    		{
@@ -2121,28 +1980,28 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	 	    			{
 		 	    				if(i<1||i>48||j<1||j>48)
 		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)82;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)129;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)188;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)82;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)129;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)188;
 		 	    				}
 		 	    				else
 		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)90;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)203;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)225;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)90;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)203;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)225;
 		 	    				}
 	 	    			}
 	 	    		}
 	    			
 	    			for(i=0;i<25;i++)
     			    {
-    			    	pixels[3*(width2*(50*posy+24)+50*posx+i)]=0;
-    					pixels[3*(width2*(50*posy+24)+50*posx+i)+1]=0;
-    					pixels[3*(width2*(50*posy+24)+50*posx+i)+2]=0;
+    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)]=0;
+    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+1]=0;
+    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+2]=0;
     					
-    					pixels[3*(width2*(50*posy+25)+50*posx+i)]=0;
-    					pixels[3*(width2*(50*posy+25)+50*posx+i)+1]=0;
-    					pixels[3*(width2*(50*posy+25)+50*posx+i)+2]=0;
+    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)]=0;
+    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+1]=0;
+    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+2]=0;
     			    }
 	    			
 	    			for(i=0;i<20;i++)
@@ -2151,20 +2010,20 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    	{
 	    		    		if(i<1||i>18||j<1||j>18)
 	    	 				{
-	    		    			pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)]=0;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+1]=0;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+2]=0;
+	    		    			pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)]=0;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+1]=0;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+2]=0;
 	    	 				}
 	    		    		else
 	    		    		{
-	    			    		pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)]=(byte)122;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+1]=(byte)185;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+2]=(byte)53;
+	    			    		pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)]=(byte)122;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+1]=(byte)185;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+2]=(byte)53;
 	    		    		}
 	    		    	}
 	    		    }
 	    		}
-	    		else if (keyPresses.contains(UserKey.Up) && posy>0 && !board[posx][posy-1])
+	    		else if (keyPresses.contains(UserKey.Up) && pos.y>0 && !board[pos.x][pos.y-1])
 	    		{
 	    			keyPresses.remove(UserKey.Up);
 
@@ -2178,86 +2037,86 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	 	    			{
 		 	    				if(i<1||i>48||j<1||j>48)
 		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)12;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)29;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)174;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)12;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)29;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)174;
 		 	    				}
 		 	    				else
 		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)91;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)70;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)248;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)91;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)70;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)248;
 		 	    				}
 	 	    			}
 	 	    		}
 	    			
-	    			if(prevdir==0)
+	    			if(prevdir==Direction.Left)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+24)+50*posx+i)]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+i)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+2]=0;
 	    			    }
 	    			}
-	    			else if(prevdir==1)
+	    			else if(prevdir==Direction.Up)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+i)+50*posx+24)]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+24)+1]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+24)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+1]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+2]=0;
 	    			    }
 	    			}
-	    			else if(prevdir==2)
+	    			else if(prevdir==Direction.Right)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+24)+50*posx+25+i)]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+2]=0;
 	    			    }
 	    			}
 	    			else
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+25+i)+50*posx+24)]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+1]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+1]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+2]=0;
 	    			    }
 	    			}
 	    			
 	    			for(i=0;i<25;i++)
     			    {
-    			    	pixels[3*(width2*(50*posy+i)+50*posx+24)]=0;
-    					pixels[3*(width2*(50*posy+i)+50*posx+24)+1]=0;
-    					pixels[3*(width2*(50*posy+i)+50*posx+24)+2]=0;
+    			    	pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)]=0;
+    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+1]=0;
+    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+2]=0;
     					
-    					pixels[3*(width2*(50*posy+i)+50*posx+25)]=0;
-    					pixels[3*(width2*(50*posy+i)+50*posx+25)+1]=0;
-    					pixels[3*(width2*(50*posy+i)+50*posx+25)+2]=0;
+    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)]=0;
+    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+1]=0;
+    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+2]=0;
     			    }
 	    			
-	    			posy--;
-	    			board[posx][posy]=true;
-	    			prevdir=3;
+	    			pos.y--;
+	    			board[pos.x][pos.y]=true;
+	    			prevdir=Direction.Down;
 	    			
 	    			for(i=0;i<50;i++)
 	 	    		{
@@ -2265,28 +2124,28 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	 	    			{
 		 	    				if(i<1||i>48||j<1||j>48)
 		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)82;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)129;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)188;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)82;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)129;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)188;
 		 	    				}
 		 	    				else
 		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)90;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)203;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)225;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)90;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)203;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)225;
 		 	    				}
 	 	    			}
 	 	    		}
 	    			
 	    			for(i=0;i<25;i++)
     			    {
-    			    	pixels[3*(width2*(50*posy+25+i)+50*posx+24)]=0;
-    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+1]=0;
-    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+2]=0;
+    			    	pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)]=0;
+    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+1]=0;
+    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+2]=0;
     					
-    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)]=0;
-    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+1]=0;
-    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+2]=0;
+    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)]=0;
+    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+1]=0;
+    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+2]=0;
     			    }
 	    			
 	    			for(i=0;i<20;i++)
@@ -2295,15 +2154,15 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    	{
 	    		    		if(i<1||i>18||j<1||j>18)
 	    	 				{
-	    		    			pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)]=0;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+1]=0;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+2]=0;
+	    		    			pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)]=0;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+1]=0;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+2]=0;
 	    	 				}
 	    		    		else
 	    		    		{
-	    			    		pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)]=(byte)122;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+1]=(byte)185;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+2]=(byte)53;
+	    			    		pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)]=(byte)122;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+1]=(byte)185;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+2]=(byte)53;
 	    		    		}
 	    		    	}
 	    		    }
@@ -2319,94 +2178,94 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	 	    			{
 		 	    				if(i<1||i>48||j<1||j>48)
 		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)186;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)119;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)3;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)186;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)119;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)3;
 		 	    				}
 		 	    				else
 		 	    				{
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)235;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)174;
-		 	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)58;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)235;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)174;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)58;
 		 	    				}
 	 	    			}
 	 	    		}
 	    			
-	    			board[posx][posy]=false;
-	    			if(reg[regpos]==Direction.Right) posx++;
-	    			else if(reg[regpos]==Direction.Down) posy++;
-	    			else if(reg[regpos]==Direction.Left) posx--;
-	    			else posy--;
+	    			board[pos.x][pos.y]=false;
+	    			if(reg[regpos]==Direction.Right) pos.x++;
+	    			else if(reg[regpos]==Direction.Down) pos.y++;
+	    			else if(reg[regpos]==Direction.Left) pos.x--;
+	    			else pos.y--;
 	    			
 	    			for(i=0;i<50;i++) { for(j=0;j<50;j++) {
 	    			if(i<1||i>48||j<1||j>48)
 	    				{
-	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)82;
-	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)129;
-	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)188;
+	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)82;
+	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)129;
+	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)188;
 	    				}
 	    				else
 	    				{
-	    					pixels[3*(width2*(50*posy+j)+50*posx+i)]=(byte)90;
-	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+1]=(byte)203;
-	    					pixels[3*(width2*(50*posy+j)+50*posx+i)+2]=(byte)225;
+	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)90;
+	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)203;
+	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)225;
 	    				}}}
 	    			
 	    			if(reg[regpos-1]==Direction.Left)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+24)+50*posx+25+i)]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+25+i)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+25+i)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+2]=0;
 	    			    }
-	    				prevdir=2;
+	    				prevdir=Direction.Right;
 	    			}
 	    			else if(reg[regpos-1]==Direction.Up)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+25+i)+50*posx+24)]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+1]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+24)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+1]=0;
-	    					pixels[3*(width2*(50*posy+25+i)+50*posx+25)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+2]=0;
 	    			    }
-	    				prevdir=3;
+	    				prevdir=Direction.Down;
 	    			}
 	    			else if(reg[regpos-1]==Direction.Right)
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+24)+50*posx+i)]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+24)+50*posx+i)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+1]=0;
-	    					pixels[3*(width2*(50*posy+25)+50*posx+i)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+2]=0;
 	    			    }
-	    				prevdir=0;
+	    				prevdir=Direction.Left;
 	    			}
 	    			else
 	    			{
 	    				for(i=0;i<25;i++)
 	    			    {
-	    			    	pixels[3*(width2*(50*posy+i)+50*posx+24)]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+24)+1]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+24)+2]=0;
+	    			    	pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+2]=0;
 	    					
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+1]=0;
-	    					pixels[3*(width2*(50*posy+i)+50*posx+25)+2]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+2]=0;
 	    			    }
-	    				prevdir=1;
+	    				prevdir=Direction.Up;
 	    			}
 	    			
 	    			for(i=0;i<20;i++)
@@ -2415,15 +2274,15 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		    	{
 	    		    		if(i<1||i>18||j<1||j>18)
 	    	 				{
-	    		    			pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)]=0;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+1]=0;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+2]=0;
+	    		    			pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)]=0;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+1]=0;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+2]=0;
 	    	 				}
 	    		    		else
 	    		    		{
-	    			    		pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)]=(byte)122;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+1]=(byte)185;
-	    						pixels[3*(width2*(50*posy+15+j)+50*posx+15+i)+2]=(byte)53;
+	    			    		pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)]=(byte)122;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+1]=(byte)185;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+2]=(byte)53;
 	    		    		}
 	    		    	}
 	    		    }
@@ -3239,6 +3098,148 @@ public class fpp extends JPanel implements KeyListener, FocusListener {
 	    		}
 	    	}
 	    }
+	}
+
+	private static void MoveCharacter(Direction dir)
+	{
+		reg[regpos]=Direction.Down;
+	    			regpos++;
+
+	    			for(int i=0;i<50;i++)
+	 	    		{
+	 	    			for(int j=0;j<50;j++)
+	 	    			{
+		 	    				if(i<1||i>48||j<1||j>48)
+		 	    				{
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)12;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)29;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)174;
+		 	    				}
+		 	    				else
+		 	    				{
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)91;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)70;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)248;
+		 	    				}
+	 	    			}
+	 	    		}
+	    			
+	    			if(prevdir==Direction.Left)
+	    			{
+	    				for(int i=0;i<25;i++)
+	    			    {
+	    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+i)+2]=0;
+	    					
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+i)+2]=0;
+	    			    }
+	    			}
+	    			else if(prevdir==Direction.Up)
+	    			{
+	    				for(int i=0;i<25;i++)
+	    			    {
+	    			    	pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+2]=0;
+	    					
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+2]=0;
+	    			    }
+	    			}
+	    			else if(prevdir==Direction.Right)
+	    			{
+	    				for(int i=0;i<25;i++)
+	    			    {
+	    			    	pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+24)+50*pos.x+25+i)+2]=0;
+	    					
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25)+50*pos.x+25+i)+2]=0;
+	    			    }
+	    			}
+	    			else
+	    			{
+	    				for(int i=0;i<25;i++)
+	    			    {
+	    			    	pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+2]=0;
+	    					
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+1]=0;
+	    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+2]=0;
+	    			    }
+	    			}
+	    			
+	    			for(int i=0;i<25;i++)
+    			    {
+    			    	pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)]=0;
+    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+1]=0;
+    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+24)+2]=0;
+    					
+    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)]=0;
+    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+1]=0;
+    					pixels[3*(width2*(50*pos.y+25+i)+50*pos.x+25)+2]=0;
+    			    }
+	    			
+	    			pos.y++;
+	    			board[pos.x][pos.y]=true;
+	    			prevdir=Direction.Up;
+	    			
+	    			for(int i=0;i<50;i++)
+	 	    		{
+	 	    			for(int j=0;j<50;j++)
+	 	    			{
+		 	    				if(i<1||i>48||j<1||j>48)
+		 	    				{
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)82;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)129;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)188;
+		 	    				}
+		 	    				else
+		 	    				{
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)]=(byte)90;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+1]=(byte)203;
+		 	    					pixels[3*(width2*(50*pos.y+j)+50*pos.x+i)+2]=(byte)225;
+		 	    				}
+	 	    			}
+	 	    		}
+	    			
+	    			for(int i=0;i<25;i++)
+    			    {
+    			    	pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)]=0;
+    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+1]=0;
+    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+24)+2]=0;
+    					
+    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)]=0;
+    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+1]=0;
+    					pixels[3*(width2*(50*pos.y+i)+50*pos.x+25)+2]=0;
+    			    }
+	    			
+	    			for(int i=0;i<20;i++)
+	    		    {
+	    		    	for(int j=0;j<20;j++)
+	    		    	{
+	    		    		if(i<1||i>18||j<1||j>18)
+	    	 				{
+	    		    			pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)]=0;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+1]=0;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+2]=0;
+	    	 				}
+	    		    		else
+	    		    		{
+	    			    		pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)]=(byte)122;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+1]=(byte)185;
+	    						pixels[3*(width2*(50*pos.y+15+j)+50*pos.x+15+i)+2]=(byte)53;
+	    		    		}
+	    		    	}
+	    		    }
 	}
 	
 	@Override
